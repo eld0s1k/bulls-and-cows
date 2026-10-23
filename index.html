@@ -26,12 +26,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, set, get, onValue, update, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-        window.FirebaseSDK = { initializeApp, getDatabase, ref, set, get, onValue, update, child };
-    </script>
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
         body {
@@ -77,7 +74,7 @@
                 </div>
                 <div>
                     <h1 class="font-extrabold text-lg leading-tight bg-gradient-to-r from-white via-indigo-100 to-purple-300 bg-clip-text text-transparent">Быки и Коровы</h1>
-                    <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Дуэль • Онлайн • ИИ с Повторами</p>
+                    <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Дуэль • Онлайн • Игра с Повторами</p>
                 </div>
             </div>
 
@@ -86,10 +83,6 @@
                 <button onclick="openModal('rulesModal')" class="px-3 py-2 rounded-xl glass-btn text-slate-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold">
                     <i class="fa-solid fa-circle-info text-indigo-400"></i>
                     <span class="hidden sm:inline">Правила</span>
-                </button>
-                <button onclick="openModal('firebaseModal')" class="px-3 py-2 rounded-xl glass-btn text-amber-300 hover:text-amber-200 transition flex items-center gap-1.5 text-xs font-semibold">
-                    <i class="fa-solid fa-fire text-amber-400"></i>
-                    <span class="hidden sm:inline">Firebase</span>
                 </button>
                 <button onclick="openModal('statsModal')" class="px-3 py-2 rounded-xl glass-btn text-slate-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold">
                     <i class="fa-solid fa-chart-simple text-emerald-400"></i>
@@ -106,50 +99,40 @@
     <main class="max-w-5xl w-full mx-auto p-4 flex-grow flex flex-col justify-center">
 
         <!-- SCREEN 1: MODE SELECTOR -->
-        <div id="modeSelectScreen" class="py-6 space-y-6 animate-fade-in">
+        <div id="modeSelectScreen" class="py-6 space-y-6">
             <div class="text-center space-y-2">
                 <span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Поддержка чисел 000 - 99999</span>
                 <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Выберите режим игры</h2>
-                <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">Играйте в одиночку против ИИ или соревнуйтесь с другом на одном или разных устройствах.</p>
+                <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">Играйте против ИИ или соревнуйтесь с другом на одном или разных устройствах.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
                 <!-- Mode 1: Human vs AI -->
-                <div onclick="selectGameMode('human_vs_ai')" class="glass-panel rounded-2xl p-5 hover:border-indigo-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
+                <div onclick="selectGameMode('human_vs_ai')" class="glass-panel rounded-2xl p-6 hover:border-indigo-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🧠</div>
-                        <h3 class="font-bold text-base text-white group-hover:text-indigo-400 transition">Угадай число ИИ</h3>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🤖</div>
+                        <h3 class="font-bold text-lg text-white group-hover:text-indigo-400 transition">Угадай ИИ</h3>
                         <p class="text-xs text-slate-400 leading-relaxed">Разгадайте тайную комбинацию, загаданную компьютером.</p>
                     </div>
                     <div class="text-xs font-bold text-indigo-400 flex items-center gap-1 pt-2">Одиночная <i class="fa-solid fa-arrow-right text-[10px]"></i></div>
                 </div>
 
-                <!-- Mode 2: AI vs Human -->
-                <div onclick="selectGameMode('ai_vs_human')" class="glass-panel rounded-2xl p-5 hover:border-purple-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
+                <!-- Mode 2: Local Duel -->
+                <div onclick="selectGameMode('two_players')" class="glass-panel rounded-2xl p-6 hover:border-emerald-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🤖</div>
-                        <h3 class="font-bold text-base text-white group-hover:text-purple-400 transition">ИИ угадывает</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Загадайте число, а математический алгоритм найдёт его.</p>
-                    </div>
-                    <div class="text-xs font-bold text-purple-400 flex items-center gap-1 pt-2">Тест ИИ <i class="fa-solid fa-arrow-right text-[10px]"></i></div>
-                </div>
-
-                <!-- Mode 3: Local Duel (2 Columns) -->
-                <div onclick="selectGameMode('two_players')" class="glass-panel rounded-2xl p-5 hover:border-emerald-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
-                    <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">⚔️</div>
-                        <h3 class="font-bold text-base text-white group-hover:text-emerald-400 transition">Дуэль (1 экран)</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Играйте по очереди. **Оба ряда ходов видны параллельно!**</p>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👥</div>
+                        <h3 class="font-bold text-lg text-white group-hover:text-emerald-400 transition">Дуэль (1 экран)</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Играйте на одном устройстве по очереди. Оба ряда ходов видны параллельно!</p>
                     </div>
                     <div class="text-xs font-bold text-emerald-400 flex items-center gap-1 pt-2">2 Игрока <i class="fa-solid fa-arrow-right text-[10px]"></i></div>
                 </div>
 
-                <!-- Mode 4: Online Multiplayer -->
-                <div onclick="selectGameMode('online')" class="glass-panel rounded-2xl p-5 hover:border-amber-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
+                <!-- Mode 3: Online Multiplayer -->
+                <div onclick="selectGameMode('online')" class="glass-panel rounded-2xl p-6 hover:border-amber-500/60 hover:bg-slate-800/80 transition cursor-pointer group flex flex-col justify-between space-y-4 shadow-xl">
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🌐</div>
-                        <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition">Онлайн (2 устройства)</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Создайте комнату или войдите по коду через Firebase.</p>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🌐</div>
+                        <h3 class="font-bold text-lg text-white group-hover:text-amber-400 transition">Онлайн дуэль</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Создайте комнату или войдите по коду с другого устройства в реальном времени.</p>
                     </div>
                     <div class="text-xs font-bold text-amber-400 flex items-center gap-1 pt-2">По сети <i class="fa-solid fa-arrow-right text-[10px]"></i></div>
                 </div>
@@ -167,7 +150,7 @@
         <div id="onlineLobbyScreen" class="hidden max-w-md mx-auto w-full py-6 space-y-6">
             <div class="glass-panel rounded-2xl p-6 space-y-5 text-center shadow-2xl">
                 <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-wifi text-amber-400 mr-2"></i>Онлайн лобби</h3>
-                <p class="text-xs text-slate-400">Играйте с другом на разных устройствах в реальном времени.</p>
+                <p class="text-xs text-slate-400">Играйте с другом на разных устройствах по коду комнаты.</p>
 
                 <div class="space-y-3 pt-2">
                     <button onclick="createOnlineRoom()" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white shadow-lg shadow-indigo-600/30 transition text-xs flex items-center justify-center gap-2">
@@ -186,9 +169,8 @@
                     </div>
                 </div>
 
-                <div class="pt-2 flex justify-between items-center text-xs">
-                    <button onclick="openModal('firebaseModal')" class="text-amber-400 hover:underline"><i class="fa-solid fa-gear mr-1"></i> Настройки Firebase</button>
-                    <button onclick="resetToMenu()" class="text-slate-400 hover:text-white">Назад</button>
+                <div class="pt-2 flex justify-center text-xs">
+                    <button onclick="resetToMenu()" class="text-slate-400 hover:text-white">Назад в меню</button>
                 </div>
             </div>
         </div>
@@ -209,7 +191,7 @@
                 </div>
 
                 <!-- Secret Setup Keypad -->
-                <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+                <div class="grid grid-cols-3 gap-2 max-w-[340px] mx-auto">
                     <button onclick="appendSecretDigit('1')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 active:scale-95 transition">1</button>
                     <button onclick="appendSecretDigit('2')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 active:scale-95 transition">2</button>
                     <button onclick="appendSecretDigit('3')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 active:scale-95 transition">3</button>
@@ -224,7 +206,7 @@
                     <button onclick="popSecretDigit()" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 active:scale-95 transition"><i class="fa-solid fa-backspace"></i></button>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex gap-2 max-w-[340px] mx-auto">
                     <button onclick="resetToMenu()" class="w-1/3 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-semibold text-slate-300 transition text-xs">Назад</button>
                     <button id="confirmSecretBtn" onclick="confirmSecretNumber()" class="w-2/3 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white shadow-lg transition text-xs disabled:opacity-50">Подтвердить</button>
                 </div>
@@ -256,43 +238,32 @@
 
             <!-- INPUT CONTROLS SECTION -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl">
-                <!-- AI Step Control -->
-                <div id="aiControlPanel" class="hidden space-y-3">
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Осталось кандидатов ИИ:</span>
-                        <span id="aiCandidatesCount" class="font-mono-code font-bold text-purple-400 text-sm">---</span>
-                    </div>
-                    <button onclick="triggerAIStep()" class="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 text-xs">
-                        <span>Сделать ход ИИ</span> <i class="fa-solid fa-robot"></i>
-                    </button>
-                </div>
-
                 <!-- Human Guess Input -->
                 <div id="humanInputPanel" class="space-y-4">
                     <div class="flex justify-center gap-2" id="guessBoxesContainer"></div>
 
-                    <!-- Keypad -->
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 max-w-md mx-auto">
-                        <button onclick="appendGuessDigit('1')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">1</button>
-                        <button onclick="appendGuessDigit('2')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">2</button>
-                        <button onclick="appendGuessDigit('3')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">3</button>
-                        <button onclick="appendGuessDigit('4')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">4</button>
-                        <button onclick="appendGuessDigit('5')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">5</button>
-                        <button onclick="appendGuessDigit('6')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">6</button>
-                        <button onclick="appendGuessDigit('7')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">7</button>
-                        <button onclick="appendGuessDigit('8')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">8</button>
-                        <button onclick="appendGuessDigit('9')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">9</button>
-                        <button onclick="clearGuessInput()" class="h-10 rounded-xl bg-rose-500/20 text-rose-300 font-semibold hover:bg-rose-500/30 transition text-xs">Сброс</button>
-                        <button onclick="appendGuessDigit('0')" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition">0</button>
-                        <button onclick="popGuessDigit()" class="h-10 rounded-xl bg-slate-800 text-base font-bold hover:bg-slate-700 transition"><i class="fa-solid fa-backspace"></i></button>
+                    <!-- 3-Column Keypad (Centered, Max-Width 340px) -->
+                    <div class="grid grid-cols-3 gap-2 max-w-[340px] mx-auto">
+                        <button onclick="appendGuessDigit('1')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">1</button>
+                        <button onclick="appendGuessDigit('2')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">2</button>
+                        <button onclick="appendGuessDigit('3')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">3</button>
+                        <button onclick="appendGuessDigit('4')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">4</button>
+                        <button onclick="appendGuessDigit('5')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">5</button>
+                        <button onclick="appendGuessDigit('6')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">6</button>
+                        <button onclick="appendGuessDigit('7')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">7</button>
+                        <button onclick="appendGuessDigit('8')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">8</button>
+                        <button onclick="appendGuessDigit('9')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">9</button>
+                        <button onclick="clearGuessInput()" class="h-11 rounded-xl bg-rose-500/20 text-rose-300 font-semibold hover:bg-rose-500/30 transition text-xs">Сброс</button>
+                        <button onclick="appendGuessDigit('0')" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition">0</button>
+                        <button onclick="popGuessDigit()" class="h-11 rounded-xl bg-slate-800 text-lg font-bold hover:bg-slate-700 transition"><i class="fa-solid fa-backspace"></i></button>
                     </div>
 
-                    <div class="flex gap-2 max-w-md mx-auto">
+                    <div class="flex gap-2 max-w-[340px] mx-auto">
                         <button id="hintBtn" onclick="getHint()" class="w-1/3 py-3 rounded-xl glass-btn text-amber-300 text-xs font-semibold flex items-center justify-center gap-1">
                             <i class="fa-solid fa-lightbulb"></i> (<span id="hintsLeftCount">2</span>)
                         </button>
                         <button id="submitGuessBtn" onclick="submitGuess()" class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold text-white shadow-lg transition text-xs flex items-center justify-center gap-2">
-                            <span>Проверить ходы</span> <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                            <span>Проверить ход</span> <i class="fa-solid fa-paper-plane text-[10px]"></i>
                         </button>
                     </div>
                 </div>
@@ -301,25 +272,25 @@
             <!-- HISTORY SECTION (Single or 2-Column Side-by-Side) -->
             <div id="historyContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Column 1 (Player 1 or You) -->
-                <div class="glass-panel rounded-2xl p-4 space-y-3 min-h-[300px]">
+                <div class="glass-panel rounded-2xl p-4 space-y-3 min-h-[280px]">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                         <h4 id="col1Title" class="font-bold text-xs text-indigo-400 flex items-center gap-2">
                             <i class="fa-solid fa-user"></i> Ваши попытки
                         </h4>
                         <span id="col1Count" class="text-[10px] text-slate-500">0 попыток</span>
                     </div>
-                    <div id="col1List" class="space-y-2 max-h-[320px] overflow-y-auto pr-1"></div>
+                    <div id="col1List" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
                 </div>
 
                 <!-- Column 2 (Player 2 or Opponent in Duel / Online) -->
-                <div id="col2Wrapper" class="glass-panel rounded-2xl p-4 space-y-3 min-h-[300px]">
+                <div id="col2Wrapper" class="glass-panel rounded-2xl p-4 space-y-3 min-h-[280px]">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                         <h4 id="col2Title" class="font-bold text-xs text-purple-400 flex items-center gap-2">
                             <i class="fa-solid fa-user-ninja"></i> Попытки Соперника
                         </h4>
                         <span id="col2Count" class="text-[10px] text-slate-500">0 попыток</span>
                     </div>
-                    <div id="col2List" class="space-y-2 max-h-[320px] overflow-y-auto pr-1"></div>
+                    <div id="col2List" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
 
@@ -334,29 +305,8 @@
 
     <!-- FOOTER -->
     <footer class="text-center py-4 text-xs text-slate-600 border-t border-slate-900">
-        <p>© Быки и Коровы — Полная онлайн-дуэль и алгоритмы с повторами</p>
+        <p>© Быки и Коровы — Онлайн-дуэль с повторяющимися цифрами</p>
     </footer>
-
-    <!-- MODAL: FIREBASE CONFIG -->
-    <div id="firebaseModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-panel max-w-md w-full rounded-2xl p-6 space-y-4 border border-slate-700 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 class="font-bold text-base text-white flex items-center gap-2"><i class="fa-solid fa-fire text-amber-400"></i> Настройки Firebase</h3>
-                <button onclick="closeModal('firebaseModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <p class="text-xs text-slate-400 leading-relaxed">Вставьте данные вашего Firebase Realtime Database для Онлайн режима:</p>
-            
-            <div class="space-y-2 text-xs">
-                <input id="fbApiKey" type="text" placeholder="apiKey (AIzaSy...)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-                <input id="fbDbUrl" type="text" placeholder="databaseURL (https://...firebaseio.com)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-                <input id="fbProjectId" type="text" placeholder="projectId" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-            </div>
-
-            <div class="flex gap-2 pt-2">
-                <button onclick="saveCustomFirebaseConfig()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition">Сохранить ключи</button>
-            </div>
-        </div>
-    </div>
 
     <!-- MODAL: SETTINGS -->
     <div id="settingsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
@@ -390,7 +340,8 @@
             </div>
             <div class="space-y-2 text-xs text-slate-300 leading-relaxed">
                 <p>• <strong>🐂 Бык:</strong> Цифра совпала и стоит на своём месте.</p>
-                <p>• <strong>🐄 Корова:</strong> Цифра есть в числе, но стоит не там.</p>
+                <p>• <strong>🐄 Корова:</strong> Цифра есть в числе, но стоит на другой позиции.</p>
+                <p>• <strong>Повторяющиеся цифры разрешены!</strong> (Например: 000, 552, 112).</p>
                 <p>• <strong>Пример:</strong> Загадано 112, проверено 121 ➔ 1 Бык (первая '1') и 2 Коровы ('2' и вторая '1').</p>
             </div>
             <button onclick="closeModal('rulesModal')" class="w-full py-2.5 rounded-xl bg-slate-800 font-bold text-slate-200 text-xs">Понятно</button>
@@ -432,14 +383,22 @@
         </div>
     </div>
 
-    <!-- CONFETTI CANVAS -->
-    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
-
     <!-- MAIN JAVASCRIPT CODE -->
     <script>
-        // CONFIG & GAME STATE
+        // FIREBASE CONFIGURATION (Вставьте свои значения из Firebase Console, если необходимо)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-YOUR-API-KEY",
+            authDomain: "index-a3457.firebaseapp.com",
+            databaseURL: "https://index-a3457-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "index-a3457",
+            storageBucket: "index-a3457.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // GAME STATE
         let gameConfig = { digitCount: 4 };
-        let currentMode = 'human_vs_ai'; // human_vs_ai, ai_vs_human, two_players, online
+        let currentMode = 'human_vs_ai'; // human_vs_ai, two_players, online
         let secretCode = '';
         let p2SecretCode = '';
         let activePlayer = 1;
@@ -449,7 +408,6 @@
         let historyP2 = [];
         let turnCount = 1;
         let hintsLeft = 2;
-        let aiCandidates = [];
         let timerInterval = null;
         let secondsElapsed = 0;
 
@@ -459,26 +417,15 @@
         let firebaseApp = null;
         let firebaseDb = null;
 
-        // Default / Fallback Firebase config
-        let firebaseConfig = {
-           apiKey: "AIzaSyB-Ezrvf1YJpQH0DB0w9MaZDfa97N4b38w",
-  authDomain: "index-a3457.firebaseapp.com",
-  databaseURL: "https://index-a3457-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "index-a3457",
-  storageBucket: "index-a3457.firebasestorage.app",
-  messagingSenderId: "598958312419",
-  appId: "1:598958312419:web:ac9c7a2221c78f67cd2ed6",
-  measurementId: "G-XC39KEPEYE"
-        };
-
         window.onload = function() {
             loadSettings();
             setupKeyboardListeners();
-            loadFirebaseConfig();
+            initFirebase();
+            updateStatsUI();
         };
 
         function loadSettings() {
-            const saved = localStorage.getItem('bulls_cows_v3_config');
+            const saved = localStorage.getItem('bulls_cows_v4_config');
             if (saved) { try { gameConfig = JSON.parse(saved); } catch(e){} }
             updateDigitButtonsUI();
             document.getElementById('summaryDigitCount').innerText = `${gameConfig.digitCount} цифры`;
@@ -486,7 +433,7 @@
 
         function setDigitCount(count) {
             gameConfig.digitCount = count;
-            localStorage.setItem('bulls_cows_v3_config', JSON.stringify(gameConfig));
+            localStorage.setItem('bulls_cows_v4_config', JSON.stringify(gameConfig));
             updateDigitButtonsUI();
             document.getElementById('summaryDigitCount').innerText = `${gameConfig.digitCount} цифры`;
         }
@@ -494,44 +441,24 @@
         function updateDigitButtonsUI() {
             [3, 4, 5].forEach(n => {
                 const btn = document.getElementById(`digitBtn${n}`);
-                btn.className = (n === gameConfig.digitCount) ? 
-                    "py-2.5 rounded-xl bg-indigo-600 font-bold text-white" : 
-                    "py-2.5 rounded-xl bg-slate-800 font-bold text-slate-300";
+                if (btn) {
+                    btn.className = (n === gameConfig.digitCount) ? 
+                        "py-2.5 rounded-xl bg-indigo-600 font-bold text-white" : 
+                        "py-2.5 rounded-xl bg-slate-800 font-bold text-slate-300";
+                }
             });
         }
 
         // FIREBASE SETUP
-        function loadFirebaseConfig() {
-            const savedFb = localStorage.getItem('bulls_cows_fb_config');
-            if (savedFb) {
-                try {
-                    firebaseConfig = JSON.parse(savedFb);
-                    document.getElementById('fbApiKey').value = firebaseConfig.apiKey || '';
-                    document.getElementById('fbDbUrl').value = firebaseConfig.databaseURL || '';
-                    document.getElementById('fbProjectId').value = firebaseConfig.projectId || '';
-                } catch(e){}
-            }
-        }
-
-        function saveCustomFirebaseConfig() {
-            firebaseConfig.apiKey = document.getElementById('fbApiKey').value.trim();
-            firebaseConfig.databaseURL = document.getElementById('fbDbUrl').value.trim();
-            firebaseConfig.projectId = document.getElementById('fbProjectId').value.trim();
-
-            localStorage.setItem('bulls_cows_fb_config', JSON.stringify(firebaseConfig));
-            closeModal('firebaseModal');
-            showCustomDialog("Сохранено", "Ключи Firebase успешно сохранены!", "info");
-        }
-
         function initFirebase() {
-            if (!firebaseConfig.databaseURL || !firebaseConfig.apiKey) return false;
             try {
-                if (!firebaseApp && window.FirebaseSDK) {
-                    firebaseApp = window.FirebaseSDK.initializeApp(firebaseConfig);
-                    firebaseDb = window.FirebaseSDK.getDatabase(firebaseApp);
+                if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    firebaseDb = firebase.database();
+                } else if (typeof firebase !== 'undefined') {
+                    firebaseDb = firebase.database();
                 }
-                return !!firebaseDb;
-            } catch(e) { return false; }
+            } catch(e) { console.error("Firebase Initialization Error", e); }
         }
 
         // MODE SELECTION
@@ -542,10 +469,6 @@
             if (mode === 'human_vs_ai') {
                 secretCode = generateRandomSecret(gameConfig.digitCount);
                 startGameplay();
-            } else if (mode === 'ai_vs_human') {
-                document.getElementById('setupTitle').innerText = 'Загадайте число для ИИ';
-                document.getElementById('p2HideWarning').classList.add('hidden');
-                openSecretSetup();
             } else if (mode === 'two_players') {
                 activePlayer = 1;
                 document.getElementById('setupTitle').innerText = 'Игрок 1: Загадайте число';
@@ -589,12 +512,7 @@
         function confirmSecretNumber() {
             if (secretInput.length !== gameConfig.digitCount) return;
 
-            if (currentMode === 'ai_vs_human') {
-                secretCode = secretInput;
-                document.getElementById('setupSecretScreen').classList.add('hidden');
-                aiCandidates = generateCandidates(gameConfig.digitCount);
-                startGameplay();
-            } else if (currentMode === 'two_players') {
+            if (currentMode === 'two_players') {
                 if (activePlayer === 1) {
                     secretCode = secretInput;
                     activePlayer = 2;
@@ -618,13 +536,17 @@
 
         // ONLINE ROOM CREATION & JOIN
         function createOnlineRoom() {
-            if (!initFirebase()) { openModal('firebaseModal'); return; }
+            if (!firebaseDb) initFirebase();
+            if (!firebaseDb) {
+                showCustomDialog("Ошибка Firebase", "Проверьте правильность заполнения ключей Firebase в коде!", "warning");
+                return;
+            }
 
             onlineRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
             onlinePlayerRole = 'host';
 
-            const roomRef = window.FirebaseSDK.ref(firebaseDb, `rooms/${onlineRoomCode}`);
-            window.FirebaseSDK.set(roomRef, {
+            const roomRef = firebaseDb.ref(`rooms/${onlineRoomCode}`);
+            roomRef.set({
                 status: 'waiting',
                 digitCount: gameConfig.digitCount,
                 p1Secret: '',
@@ -645,13 +567,13 @@
         function joinOnlineRoom() {
             const code = document.getElementById('roomCodeInput').value.trim();
             if (code.length !== 4) { showCustomDialog("Ошибка", "Введите 4-значный код комнаты!", "warning"); return; }
-            if (!initFirebase()) { openModal('firebaseModal'); return; }
+            if (!firebaseDb) initFirebase();
 
             onlineRoomCode = code;
             onlinePlayerRole = 'guest';
 
-            const roomRef = window.FirebaseSDK.ref(firebaseDb, `rooms/${onlineRoomCode}`);
-            window.FirebaseSDK.get(roomRef).then(snapshot => {
+            const roomRef = firebaseDb.ref(`rooms/${onlineRoomCode}`);
+            roomRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
                     showCustomDialog("Ошибка", "Комната с таким кодом не найдена!", "warning");
                     return;
@@ -670,23 +592,23 @@
 
         function syncOnlineSecret() {
             const secretKey = onlinePlayerRole === 'host' ? 'p1Secret' : 'p2Secret';
-            const roomRef = window.FirebaseSDK.ref(firebaseDb, `rooms/${onlineRoomCode}`);
+            const roomRef = firebaseDb.ref(`rooms/${onlineRoomCode}`);
 
             let updateObj = {};
             updateObj[secretKey] = onlinePlayerRole === 'host' ? secretCode : p2SecretCode;
-            window.FirebaseSDK.update(roomRef, updateObj);
+            roomRef.update(updateObj);
 
-            showCustomDialog("Ожидание", "Ожидаем подсоединения и секретного числа соперника...", "info");
+            showCustomDialog("Ожидание", "Ожидаем подключение второго игрока...", "info");
         }
 
         function listenToOnlineRoom() {
-            const roomRef = window.FirebaseSDK.ref(firebaseDb, `rooms/${onlineRoomCode}`);
-            window.FirebaseSDK.onValue(roomRef, (snapshot) => {
+            const roomRef = firebaseDb.ref(`rooms/${onlineRoomCode}`);
+            roomRef.on('value', (snapshot) => {
                 if (!snapshot.exists()) return;
                 const data = snapshot.val();
 
                 if (data.p1Secret && data.p2Secret && data.status !== 'playing') {
-                    window.FirebaseSDK.update(roomRef, { status: 'playing' });
+                    roomRef.update({ status: 'playing' });
                     closeModal('customDialogModal');
                     secretCode = data.p1Secret;
                     p2SecretCode = data.p2Secret;
@@ -727,13 +649,10 @@
                 document.getElementById('onlineRoomBadge').classList.add('hidden');
             }
 
-            if (currentMode === 'ai_vs_human') {
-                document.getElementById('humanInputPanel').classList.add('hidden');
-                document.getElementById('aiControlPanel').classList.remove('hidden');
-                document.getElementById('aiCandidatesCount').innerText = aiCandidates.length;
+            if (currentMode === 'human_vs_ai') {
+                document.getElementById('hintBtn').classList.remove('hidden');
             } else {
-                document.getElementById('humanInputPanel').classList.remove('hidden');
-                document.getElementById('aiControlPanel').classList.add('hidden');
+                document.getElementById('hintBtn').classList.add('hidden');
             }
         }
 
@@ -832,8 +751,12 @@
                 updateObj[turnKey] = list;
                 updateObj['currentTurn'] = nextTurn;
 
-                const roomRef = window.FirebaseSDK.ref(firebaseDb, `rooms/${onlineRoomCode}`);
-                window.FirebaseSDK.update(roomRef, updateObj);
+                const roomRef = firebaseDb.ref(`rooms/${onlineRoomCode}`);
+                roomRef.update(updateObj);
+
+                if (res.bulls === gameConfig.digitCount) {
+                    handleVictory('online');
+                }
             } else {
                 if (activePlayer === 1) historyP1.unshift(record);
                 else historyP2.unshift(record);
@@ -857,39 +780,6 @@
             renderHistoryTable();
         }
 
-        function triggerAIStep() {
-            if (aiCandidates.length === 0) return;
-            const aiGuess = aiCandidates[0];
-            const res = calculateBullsAndCows(secretCode, aiGuess);
-
-            historyP1.unshift({ guess: aiGuess, bulls: res.bulls, cows: res.cows, turn: turnCount });
-
-            aiCandidates = aiCandidates.filter(c => {
-                const evalRes = calculateBullsAndCows(c, aiGuess);
-                return evalRes.bulls === res.bulls && evalRes.cows === res.cows;
-            });
-
-            document.getElementById('aiCandidatesCount').innerText = aiCandidates.length;
-
-            if (res.bulls === gameConfig.digitCount) {
-                handleVictory('ИИ');
-                return;
-            }
-
-            turnCount++;
-            updateGameplayUI();
-            renderHistoryTable();
-        }
-
-        function generateCandidates(len) {
-            const list = [];
-            const max = Math.pow(10, len) - 1;
-            for (let i = 0; i <= max; i++) {
-                list.push(i.toString().padStart(len, '0'));
-            }
-            return list;
-        }
-
         function generateRandomSecret(len) {
             let res = '';
             for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
@@ -902,7 +792,7 @@
             const col2List = document.getElementById('col2List');
             const col2Wrapper = document.getElementById('col2Wrapper');
 
-            if (currentMode === 'human_vs_ai' || currentMode === 'ai_vs_human') {
+            if (currentMode === 'human_vs_ai') {
                 col2Wrapper.classList.add('hidden');
                 document.getElementById('col1Title').innerText = 'История ходов';
                 document.getElementById('col1Count').innerText = `${historyP1.length} ходов`;
@@ -947,7 +837,7 @@
         }
 
         function confirmGiveUpModal() {
-            showCustomDialog("Сдаться?", "Раскрыть число и выйти?", "confirm", () => {
+            showCustomDialog("Сдаться?", "Раскрыть секретное число и выйти?", "confirm", () => {
                 showCustomDialog("Загаданное число", `Загаданное число: ${secretCode}`, "info", () => resetToMenu());
             });
         }
@@ -965,10 +855,30 @@
 
         function handleVictory(winner) {
             stopTimer();
+            saveStats(true);
             document.getElementById('victoryModal').classList.remove('hidden');
             document.getElementById('victorySecret').innerText = secretCode;
             document.getElementById('victoryTitle').innerText = `Победа!`;
             document.getElementById('victorySubtitle').innerText = `Угадано за ${turnCount} ходов.`;
+        }
+
+        function saveStats(won) {
+            let games = parseInt(localStorage.getItem('bulls_cows_games') || '0') + 1;
+            let wins = parseInt(localStorage.getItem('bulls_cows_wins') || '0') + (won ? 1 : 0);
+            localStorage.setItem('bulls_cows_games', games.toString());
+            localStorage.setItem('bulls_cows_wins', wins.toString());
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            let games = parseInt(localStorage.getItem('bulls_cows_games') || '0');
+            let wins = parseInt(localStorage.getItem('bulls_cows_wins') || '0');
+            let winRate = games > 0 ? Math.round((wins / games) * 100) : 0;
+            
+            const gElem = document.getElementById('statGames');
+            const wElem = document.getElementById('statWins');
+            if (gElem) gElem.innerText = games;
+            if (wElem) wElem.innerText = `${winRate}%`;
         }
 
         function resetToMenu() {
